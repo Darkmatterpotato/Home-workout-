@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Daily Workout">
+<meta name="theme-color" content="#d4f000">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Daily Workout</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #0e0e0e;
+    --surface: #161616;
+    --card:    #1c1c1c;
+    --border:  #252525;
+    --accent:  #d4f000;
+    --text:    #f0f0f0;
+    --muted:   #666;
+    --soft:    #444;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.5;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 44px 44px 36px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tag {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 3px;
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 12vw, 110px);
+    line-height: 0.88;
+    letter-spacing: 2px;
+    margin-bottom: 28px;
+  }
+  h1 em { color: var(--accent); font-style: normal; }
+
+  .header-meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .pill {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .pill strong { color: var(--accent); font-weight: 600; }
+
+  /* ── TEMPO BANNER ── */
+  .tempo-bar {
+    background: var(--accent);
+    color: #000;
+    padding: 13px 44px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .tempo-bar .rule { font-size: 12px; font-weight: 500; }
+  .tempo-bar strong { font-weight: 700; }
+  .tempo-chips { display: flex; gap: 8px; }
+  .tempo-chip {
+    background: rgba(0,0,0,0.15);
+    border-radius: 5px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── CONTENT ── */
+  .content { max-width: 820px; margin: 0 auto; padding: 44px 44px 100px; }
+
+  /* ── SECTION LABEL ── */
+  .sec {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 44px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .sec::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .sec:first-child { margin-top: 0; }
+
+  /* ── WARM UP ── */
+  .warmup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+  }
+  .warmup-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--soft);
+    border-radius: 6px;
+    padding: 12px 14px;
+  }
+  .warmup-name { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+  .warmup-detail { font-size: 11px; color: var(--muted); }
+
+  /* ── BLOCK ── */
+  .block {
+    margin-bottom: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .block-head {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 13px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .block-left { display: flex; align-items: center; gap: 12px; }
+  .block-title { font-size: 13px; font-weight: 600; }
+  .block-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .ss-tag {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    background: rgba(212,240,0,0.08);
+    border: 1px solid rgba(212,240,0,0.2);
+    border-radius: 4px;
+    padding: 2px 8px;
+  }
+  .block-sets {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .block-sets span { color: var(--accent); font-size: 18px; }
+
+  /* ── EXERCISE ROWS ── */
+  .ex-row {
+    display: grid;
+    grid-template-columns: 30px 1fr 60px 90px 80px;
+    align-items: center;
+    padding: 13px 20px;
+    gap: 10px;
+    background: var(--surface);
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: background 0.1s;
+  }
+  .ex-row:last-child { border-bottom: none; }
+  .ex-row:hover { background: #1f1f1f; }
+  .ex-id {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    color: var(--soft);
+    text-align: center;
+  }
+  .ex-name-wrap .name { font-size: 13px; font-weight: 600; }
+  .ex-name-wrap .note { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .ex-sets-val, .ex-reps-val {
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+  }
+  .ex-tempo-val {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    font-family: monospace;
+    letter-spacing: 1px;
+  }
+  .col-hdr-row {
+    display: grid;
+    grid-template-columns: 30px 1fr 60px 90px 80px;
+    padding: 7px 20px;
+    gap: 10px;
+    background: #111;
+    border-bottom: 1px solid var(--border);
+  }
+  .col-hdr {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #444;
+    text-align: center;
+  }
+  .col-hdr:nth-child(2) { text-align: left; }
+
+  .pair-divider {
+    height: 1px;
+    background: rgba(212,240,0,0.08);
+  }
+
+  /* ── COOLDOWN ── */
+  .cooldown-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 8px;
+  }
+  .cooldown-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid #2a3a00;
+    border-radius: 6px;
+    padding: 12px 14px;
+  }
+
+  /* ── TOTAL ── */
+  .total-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 36px;
+  }
+  .total-label { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+  .total-val { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--accent); letter-spacing: 2px; }
+  .total-note { font-size: 12px; color: var(--muted); max-width: 320px; line-height: 1.5; }
+
+  @media (max-width: 580px) {
+    header, .content, .tempo-bar { padding-left: 18px; padding-right: 18px; }
+    .ex-row, .col-hdr-row { grid-template-columns: 26px 1fr 50px 70px; }
+    .ex-tempo-val, .col-hdr:last-child { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tag">Daily Repeat Workout</div>
+  <h1>GET UP.<br><em>TRAIN.</em><br>REPEAT.</h1>
+  <div class="header-meta">
+    <div class="pill">⏱ <strong>~2 Hours</strong></div>
+    <div class="pill">🏋️ <strong>2× 10kg DBs</strong></div>
+    <div class="pill">📅 <strong>Every Single Day</strong></div>
+    <div class="pill">💪 <strong>Full Body — Every Session</strong></div>
+  </div>
+</header>
+
+<div class="tempo-bar">
+  <div class="rule"><strong>TEMPO RULE:</strong> Every weighted set follows this pattern →</div>
+  <div class="tempo-chips">
+    <div class="tempo-chip">4s DOWN</div>
+    <div class="tempo-chip">1s HOLD</div>
+    <div class="tempo-chip">3s UP</div>
+  </div>
+  <div class="rule">This is what makes 10kg feel heavy. Non-negotiable.</div>
+</div>
+
+<div class="content">
+
+  <div class="sec">Warm-Up — 10 Min</div>
+  <div class="warmup-grid">
+    <div class="warmup-item"><div class="warmup-name">Jumping Jacks</div><div class="warmup-detail">2 min continuous</div></div>
+    <div class="warmup-item"><div class="warmup-name">Hip Circles</div><div class="warmup-detail">10 each direction</div></div>
+    <div class="warmup-item"><div class="warmup-name">Arm Circles</div><div class="warmup-detail">15 each direction</div></div>
+    <div class="warmup-item"><div class="warmup-name">Bodyweight Squat</div><div class="warmup-detail">20 reps — deep</div></div>
+    <div class="warmup-item"><div class="warmup-name">Push-up</div><div class="warmup-detail">10 reps — slow</div></div>
+    <div class="warmup-item"><div class="warmup-name">Inchworm</div><div class="warmup-detail">5 reps — full stretch</div></div>
+    <div class="warmup-item"><div class="warmup-name">Leg Swings</div><div class="warmup-detail">10 each leg</div></div>
+  </div>
+
+  <!-- BLOCK 1 -->
+  <div class="sec">Block 1 — Lower Foundation</div>
+  <div class="block">
+    <div class="block-head">
+      <div class="block-left">
+        <div><div class="block-title">Bulgarian Split Squat + Romanian Deadlift</div><div class="block-sub">Quad · Hamstring · Glute — hardest block first</div></div>
+        <div class="ss-tag">SUPERSET</div>
+      </div>
+      <div class="block-sets"><span>4</span> sets</div>
+    </div>
+    <div class="col-hdr-row">
+      <div class="col-hdr">#</div><div class="col-hdr">Exercise</div><div class="col-hdr">Sets</div><div class="col-hdr">Reps</div><div class="col-hdr">Tempo</div>
+    </div>
+    <div class="ex-row">
+      <div class="ex-id">1a</div>
+      <div class="ex-name-wrap"><div class="name">Bulgarian Split Squat</div><div class="note">Rear foot on couch · both DBs · full depth</div></div>
+      <div class="ex-sets-val">4</div><div class="ex-reps-val">12 each</div><div class="ex-tempo-val">4-2-2</div>
+    </div>
+    <div class="pair-divider"></div>
+    <div class="ex-row">
+      <div class="ex-id">1b</div>
+      <div class="ex-name-wrap"><div class="name">DB Romanian Deadlift</div><div class="note">Hip hinge back · feel hamstring stretch · hold 1s at bottom</div></div>
+      <div class="ex-sets-val">4</div><div class="ex-reps-val">20</div><div class="ex-tempo-val">4-1-2</div>
+    </div>
+  </div>
+
+  <!-- BLOCK 2 -->
+  <div class="sec">Block 2 — Push + Lower</div>
+  <div class="block">
+    <div class="block-head">
+      <div class="block-left">
+        <div><div class="block-title">Decline Push-up + Goblet Squat</div><div class="block-sub">Chest · Tricep · Quad</div></div>
+        <div class="ss-tag">SUPERSET</div>
+      </div>
+      <div class="block-sets"><span>4</span> sets</div>
+    </div>
+    <div class="col-hdr-row">
+      <div class="col-hdr">#</div><div class="col-hdr">Exercise</div><div class="col-hdr">Sets</div><div class="col-hdr">Reps</div><div class="col-hdr">Tempo</div>
+    </div>
+    <div class="ex-row">
+      <div class="ex-id">2a</div>
+      <div class="ex-name-wrap"><div class="name">Decline Push-up</div><div class="note">Feet elevated on couch · pause at bottom</div></div>
+      <div class="ex-sets-val">4</div><div class="ex-reps-val">20–25</div><div class="ex-tempo-val">4-1-3</div>
+    </div>
+    <div class="pair-divider"></div>
+    <div class="ex-row">
+      <div class="ex-id">2b</div>
+      <div class="ex-name-wrap"><div class="name">DB Goblet Squat</div><div class="note">3s pause at the bottom · drive knees out</div></div>
+      <div class="ex-sets-val">4</div><div class="ex-reps-val">20</div><div class="ex-tempo-val">3-3-2</div>
+    </div>
+  </div>
+
+  <!-- BLOCK 3 -->
+  <div class="sec">Block 3 — Pull + Lower</div>
+  <div class="block">
+    <div class="block-head">
+      <div class="block-left">
+        <div><div class="block-title">Single-Arm Row + Reverse Lunge</div><div class="block-sub">Back · Bicep · Quad · Glute</div></div>
+        <div class="ss-tag">SUPERSET</div>
+      </div>
+      <div class="block-sets"><span>4</span> sets</div>
+    </div>
+    <div class="col-hdr-row">
+      <div class="col-hdr">#</div><div class="col-hdr">Exercise</div><div class="col-hdr">Sets</div><div class="col-hdr">Reps</div><div class="col-hdr">Tempo</div>
+    </div>
+    <div class="ex-row">
+      <div class="ex-id">3a</div>
+      <div class="ex-name-wrap"><div class="name">Single-Arm DB Row</div><div class="note">Full stretch at bottom · brace on knee · elbow to ceiling</div></div>
+      <div class="ex-sets-val">4</div><div class="ex-reps-val">15 each</div><div class="ex-tempo-val">4-1-2</div>
+    </div>
+    <div class="pair-divider"></div>
+    <div class="ex-row">
+      <div class="ex-id">3b</div>
+      <div class="ex-name-wrap"><div class="name">DB Reverse Lunge</div><div class="note">Step back · knee just off the floor · both DBs</div></div>
+      <div class="ex-sets-val">4</div><div class="ex-reps-val">15 each</div><div class="ex-tempo-val">3-1-2</div>
+    </div>
+  </div>
+
+  <!-- BLOCK 4 -->
+  <div class="sec">Block 4 — Shoulder + Glute</div>
+  <div class="block">
+    <div class="block-head">
+      <div class="block-left">
+        <div><div class="block-title">Pike Push-up + Single-Leg Hip Thrust</div><div class="block-sub">Shoulder · Glute · Hamstring</div></div>
+        <div class="ss-tag">SUPERSET</div>
+      </div>
+      <div class="block-sets"><span>4</span> sets</div>
+    </div>
+    <div class="col-hdr-row">
+      <div class="col-hdr">#</div><div class="col-hdr">Exercise</div><div class="col-hdr">Sets</div><div class="col-hdr">Reps</div><div class="col-hdr">Tempo</div>
+    </div>
+    <div class="ex-row">
+      <div class="ex-id">4a</div>
+      <div class="ex-name-wrap"><div class="name">Pike Push-up</div><div class="note">Hips high · head towards floor · full range</div></div>
+      <div class="ex-sets-val">4</div><div class="ex-reps-val">15–18</div><div class="ex-tempo-val">3-1-3</div>
+    </div>
+    <div class="pair-divider"></div>
+    <div class="ex-row">
+      <div class="ex-id">4b</div>
+      <div class="ex-name-wrap"><div class="name">Single-Leg Hip Thrust</div><div class="note">Shoulders on couch · one leg raised · squeeze hard at top</div></div>
+      <div class="ex-sets-val">4</div><div class="ex-reps-val">18 each</div><div class="ex-tempo-val">2-2-2</div>
+    </div>
+  </div>
+
+  <!-- BLOCK 5 -->
+  <div class="sec">Block 5 — Lateral Shoulder + Calf</div>
+  <div class="block">
+    <div class="block-head">
+      <div class="block-left">
+        <div><div class="block-title">DB Lateral Raise + Single-Leg Calf Raise</div><div class="block-sub">Side delts · Calves</div></div>
+        <div class="ss-tag">SUPERSET</div>
+      </div>
+      <div class="block-sets"><span>3</span> sets</div>
+    </div>
+    <div class="col-hdr-row">
+      <div class="col-hdr">#</div><div class="col-hdr">Exercise</div><div class="col-hdr">Sets</div><div class="col-hdr">Reps</div><div class="col-hdr">Tempo</div>
+    </div>
+    <div class="ex-row">
+      <div class="ex-id">5a</div>
+      <div class="ex-name-wrap"><div class="name">DB Lateral Raise</div><div class="note">3s up · 5s DOWN — the lowering phase is everything</div></div>
+      <div class="ex-sets-val">3</div><div class="ex-reps-val">20</div><div class="ex-tempo-val">3-0-5</div>
+    </div>
+    <div class="pair-divider"></div>
+    <div class="ex-row">
+      <div class="ex-id">5b</div>
+      <div class="ex-name-wrap"><div class="name">Single-Leg Calf Raise</div><div class="note">Wall for balance · full range · pause at top</div></div>
+      <div class="ex-sets-val">3</div><div class="ex-reps-val">25 each</div><div class="ex-tempo-val">3-1-3</div>
+    </div>
+  </div>
+
+  <!-- BLOCK 6 -->
+  <div class="sec">Block 6 — Arms</div>
+  <div class="block">
+    <div class="block-head">
+      <div class="block-left">
+        <div><div class="block-title">Diamond Push-up + Hammer Curl</div><div class="block-sub">Tricep · Bicep · Forearm</div></div>
+        <div class="ss-tag">SUPERSET</div>
+      </div>
+      <div class="block-sets"><span>3</span> sets</div>
+    </div>
+    <div class="col-hdr-row">
+      <div class="col-hdr">#</div><div class="col-hdr">Exercise</div><div class="col-hdr">Sets</div><div class="col-hdr">Reps</div><div class="col-hdr">Tempo</div>
+    </div>
+    <div class="ex-row">
+      <div class="ex-id">6a</div>
+      <div class="ex-name-wrap"><div class="name">Diamond Push-up</div><div class="note">Hands form a diamond · elbows tight · pause at bottom</div></div>
+      <div class="ex-sets-val">3</div><div class="ex-reps-val">18–20</div><div class="ex-tempo-val">4-1-3</div>
+    </div>
+    <div class="pair-divider"></div>
+    <div class="ex-row">
+      <div class="ex-id">6b</div>
+      <div class="ex-name-wrap"><div class="name">DB Hammer Curl</div><div class="note">No swing · slow negative · both arms together</div></div>
+      <div class="ex-sets-val">3</div><div class="ex-reps-val">20</div><div class="ex-tempo-val">3-0-4</div>
+    </div>
+  </div>
+
+  <!-- BLOCK 7 -->
+  <div class="sec">Block 7 — Core Finisher</div>
+  <div class="block">
+    <div class="block-head">
+      <div class="block-left">
+        <div><div class="block-title">3 Moves · 3 Rounds · No Rest Between</div><div class="block-sub">All 3 back-to-back · rest 60s · repeat</div></div>
+      </div>
+      <div class="block-sets"><span>3</span> rounds</div>
+    </div>
+    <div class="col-hdr-row">
+      <div class="col-hdr">#</div><div class="col-hdr">Exercise</div><div class="col-hdr">Rounds</div><div class="col-hdr">Duration</div><div class="col-hdr">Notes</div>
+    </div>
+    <div class="ex-row">
+      <div class="ex-id">7a</div>
+      <div class="ex-name-wrap"><div class="name">Plank</div><div class="note">Squeeze glutes · brace abs · don't let hips sag</div></div>
+      <div class="ex-sets-val">3</div><div class="ex-reps-val">60s</div><div class="ex-tempo-val">hold</div>
+    </div>
+    <div class="pair-divider"></div>
+    <div class="ex-row">
+      <div class="ex-id">7b</div>
+      <div class="ex-name-wrap"><div class="name">DB Russian Twist</div><div class="note">Feet off the floor · rotate fully each side</div></div>
+      <div class="ex-sets-val">3</div><div class="ex-reps-val">30 total</div><div class="ex-tempo-val">controlled</div>
+    </div>
+    <div class="pair-divider"></div>
+    <div class="ex-row">
+      <div class="ex-id">7c</div>
+      <div class="ex-name-wrap"><div class="name">Dead Bug</div><div class="note">Lower back pinned · opposite arm and leg extend fully</div></div>
+      <div class="ex-sets-val">3</div><div class="ex-reps-val">20 total</div><div class="ex-tempo-val">controlled</div>
+    </div>
+  </div>
+
+  <div class="sec">Cool-Down — 10 Min</div>
+  <div class="cooldown-grid">
+    <div class="cooldown-item"><div class="warmup-name">Hip Flexor Stretch</div><div class="warmup-detail">2 min each side</div></div>
+    <div class="cooldown-item"><div class="warmup-name">Hamstring Stretch</div><div class="warmup-detail">90s each side</div></div>
+    <div class="cooldown-item"><div class="warmup-name">Chest Doorway Stretch</div><div class="warmup-detail">60s — arms at 90°</div></div>
+    <div class="cooldown-item"><div class="warmup-name">Thoracic Rotation</div><div class="warmup-detail">10 reps each side</div></div>
+    <div class="cooldown-item"><div class="warmup-name">Child's Pose</div><div class="warmup-detail">90s continuous</div></div>
+  </div>
+
+  <div class="total-bar">
+    <div><div class="total-label">Total Time</div><div class="total-val">~2 Hours</div></div>
+    <div><div class="total-label">Total Sets</div><div class="total-val">~66 Sets</div></div>
+    <div><div class="total-label">Blocks</div><div class="total-val">7</div></div>
+    <div class="total-note">Rest 60–90s between supersets. Finish under 90 min? Rest periods too long or tempo too fast. Slow down.</div>
+  </div>
+
+</div>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('SW registered:', reg.scope))
+        .catch(err => console.log('SW error:', err));
+    });
+  }
+</script>
+</body>
+</html>
